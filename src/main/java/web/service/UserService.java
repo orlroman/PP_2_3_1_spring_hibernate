@@ -1,4 +1,7 @@
 package web.service;
 
-public class UserService {
+import web.entity.User;
+
+public interface UserService {
+    void save(User user);
 }
