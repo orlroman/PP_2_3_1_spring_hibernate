@@ -3,6 +3,7 @@ package web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import web.entity.User;
 import web.service.UserService;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping(value = "/users")
@@ -34,7 +37,10 @@ public class UsersController {
     }
     
     @PostMapping(value = "/save")
-    public String create(@ModelAttribute("user") User user) {
+    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "users/new";
+        }
         userService.save(user);
         return "redirect:/users";
     }
@@ -46,9 +52,12 @@ public class UsersController {
     }
     
     @PostMapping(value = "/edit")
-    public String update(@ModelAttribute(name = "user") User user,
+    public String update(@ModelAttribute(name = "user") @Valid User user, BindingResult bindingResult,
                        @RequestParam("id") int id) {
         
+        if (bindingResult.hasErrors()) {
+            return "users/edit";
+        }
         userService.update(id, user);
         return "redirect:/users";
     }
