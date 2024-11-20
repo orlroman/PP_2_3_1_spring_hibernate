@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import web.dao.UserDao;
 import web.entity.User;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -27,17 +28,30 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(int id) {
+        User user = userDao.getUser(id);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found with id: " + id);
+        }
         userDao.delete(id);
     }
     
     @Override
     @Transactional
     public void update(int id, User user) {
+        User existingUser = userDao.getUser(id);
+        if (existingUser == null) {
+            throw new EntityNotFoundException("User not found with id: " + id);
+        }
         userDao.update(id, user);
     }
     
     @Override
+    @Transactional(readOnly = true)
     public User getUser(int id) {
+        User user = userDao.getUser(id);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found with id: " + id);
+        }
         return userDao.getUser(id);
     }
     
